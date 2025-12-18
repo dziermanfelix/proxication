@@ -136,4 +136,3 @@ Before deploying to production:
 5. Configure static files serving
 6. Set up proper CORS origins
 7. Use environment variables for all sensitive data
-
