@@ -85,25 +85,6 @@ The API will be available at `http://localhost:8000/`
 - Health Check: `GET /api/health/`
 - Admin Panel: `http://localhost:8000/admin/`
 
-## Project Structure
-
-```
-proxication/
-├── config/          # Django project settings
-│   ├── settings.py  # Main settings file
-│   ├── urls.py      # Root URL configuration
-│   ├── wsgi.py      # WSGI configuration
-│   └── asgi.py      # ASGI configuration
-├── api/             # Main API app
-│   ├── models.py    # Database models
-│   ├── serializers.py  # DRF serializers
-│   ├── views.py     # API views
-│   └── urls.py      # API URL routes
-├── manage.py        # Django management script
-├── requirements.txt # Python dependencies
-└── README.md        # This file
-```
-
 ## Development
 
 ### Creating a New App
