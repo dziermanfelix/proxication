@@ -1,0 +1,15 @@
+{
+  "name": "proxication",
+  "version": "1.0.0",
+  "description": "Fullstack application with Django backend and React frontend",
+  "scripts": {
+    "server": "cd backend && python manage.py runserver",
+    "test": "cd backend && python manage.py test",
+    "createsuperuser": "cd backend && python manage.py createsuperuser",
+    "makemigrations": "cd backend && python manage.py makemigrations",
+    "migrate": "cd backend && python manage.py migrate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
