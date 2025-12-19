@@ -3,6 +3,16 @@
 import os
 import sys
 
+# Add the backend directory to Python path so Django can find the apps
+# This ensures tests can be discovered when running from project root
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+# Change to backend directory to ensure proper working directory for Django
+# This is important for test discovery and other Django operations
+os.chdir(BASE_DIR)
+
 
 def main():
     """Run administrative tasks."""
