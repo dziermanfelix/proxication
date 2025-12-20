@@ -3,13 +3,20 @@
   "version": "1.0.0",
   "description": "Fullstack application with Django backend and React frontend",
   "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "install:backend": "pip install -r requirements.txt",
     "server": "cd backend && python manage.py runserver",
     "test": "cd backend && python manage.py test",
     "createsuperuser": "cd backend && python manage.py createsuperuser",
     "makemigrations": "cd backend && python manage.py makemigrations",
-    "migrate": "cd backend && python manage.py migrate"
+    "migrate": "cd backend && python manage.py migrate",
+    "frontend": "cd frontend && npm run dev",
+    "frontend:install": "cd frontend && npm install"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }
