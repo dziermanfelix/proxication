@@ -22,7 +22,7 @@ VITE_MAPBOX_TOKEN=your_mapbox_token
 
 ```bash
 npm run install:backend
-npm run frontend:install
+npm run install:frontend
 npm install
 ```
 
