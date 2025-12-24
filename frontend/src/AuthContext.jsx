@@ -51,6 +51,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (username, email, password, password2) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/register/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, password2 }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setAccessToken(data.access);
+        setUser(data.user);
+        localStorage.setItem('accessToken', data.access);
+        localStorage.setItem('refreshToken', data.refresh);
+        return { success: true };
+      } else {
+        return { error: 'Registration Failed', errors: data };
+      }
+    } catch (error) {
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
   const login = async (username, password) => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/login/`, {
@@ -87,6 +113,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     accessToken,
+    register,
     login,
     logout,
     loading,
