@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 function Login() {
@@ -67,6 +67,14 @@ function Login() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <div style={styles.linkContainer}>
+          <p style={styles.linkText}>
+            Don't have an account?{' '}
+            <Link to='/register' style={styles.link}>
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -146,6 +154,20 @@ const styles = {
     color: '#c33',
     borderRadius: '4px',
     fontSize: '0.9rem',
+  },
+  linkContainer: {
+    marginTop: '1.5rem',
+    textAlign: 'center',
+  },
+  linkText: {
+    fontSize: '0.9rem',
+    color: '#555',
+    margin: 0,
+  },
+  link: {
+    color: '#007bff',
+    textDecoration: 'none',
+    fontWeight: '500',
   },
 };
 
