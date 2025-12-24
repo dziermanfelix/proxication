@@ -114,6 +114,7 @@ class PoiTests(APITestCase):
         self.assertEqual(Decimal(response.data['latitude']), Decimal(data['latitude']))
         self.assertEqual(Decimal(response.data['longitude']), Decimal(data['longitude']))
         self.assertEqual(response.data['created_by_username'], self.user.username)
+        self.assertEqual(response.data['created_by'], self.user_id)
 
     def test_get_poi_forbidden(self):
         data = {

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from './config';
 
 const AuthContext = createContext(null);
 
@@ -14,8 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
   const [loading, setLoading] = useState(true);
-
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
   useEffect(() => {
     // Check if user is already logged in

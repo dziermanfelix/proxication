@@ -22,10 +22,7 @@ class POISerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username']
-        extra_kwargs = {
-            'created_by': {'write_only': True},  # Hide in response, but allow in input
-        }
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by_username', 'created_by']
 
     def validate_latitude(self, value):
         """Ensure latitude is between -90 and 90 degrees"""
