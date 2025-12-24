@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -52,15 +53,27 @@ function Login() {
             <label htmlFor='password' style={styles.label}>
               Password
             </label>
-            <input
-              id='password'
-              type='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={styles.input}
-              placeholder='Enter your password'
-            />
+            <div style={styles.showInput}>
+              <input
+                id='password'
+                type={isPasswordVisible ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={styles.input}
+                placeholder='Enter your password'
+              />
+              <button
+                type='button'
+                style={styles.showButton}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsPasswordVisible((prev) => !prev);
+                }}
+              >
+                {isPasswordVisible ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
 
           <button type='submit' disabled={loading} style={styles.button}>
@@ -118,8 +131,26 @@ const styles = {
     fontWeight: '500',
     color: '#555',
   },
+  showButton: {
+    position: 'absolute',
+    right: '0.75rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: '500',
+    color: '#007bff',
+    padding: 0,
+  },
+  showInput: {
+    position: 'relative',
+    width: '100%',
+  },
   input: {
-    padding: '0.75rem',
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: '0.75rem 3rem 0.75rem 0.75rem',
     fontSize: '1rem',
     border: '1px solid #ddd',
     borderRadius: '4px',

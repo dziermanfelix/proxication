@@ -7,14 +7,13 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPassword2Visible, setIsPassword2Visible] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
-
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isPassword2Visible, setIsPassword2Visible] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,7 +100,7 @@ function Register() {
                   setIsPasswordVisible((prev) => !prev);
                 }}
               >
-                {isPasswordVisible ? 'hide' : 'show'}
+                {isPasswordVisible ? 'Hide' : 'Show'}
               </button>
             </div>
             {formErrors.password && <p style={styles.error}>{formErrors.password}</p>}
@@ -129,7 +128,7 @@ function Register() {
                   setIsPassword2Visible((prev) => !prev);
                 }}
               >
-                {isPassword2Visible ? 'hide' : 'show'}
+                {isPassword2Visible ? 'Hide' : 'Show'}
               </button>
             </div>
             {formErrors.password2 && <p style={styles.error}>{formErrors.password2}</p>}
@@ -203,13 +202,13 @@ const styles = {
     padding: 0,
   },
   showInput: {
-    position: 'relative', // make the container relative
+    position: 'relative',
     width: '100%',
   },
   input: {
     width: '100%',
     boxSizing: 'border-box',
-    padding: '0.75rem 3rem 0.75rem 0.75rem', // 👈 KEY FIX
+    padding: '0.75rem 3rem 0.75rem 0.75rem',
     fontSize: '1rem',
     border: '1px solid #ddd',
     borderRadius: '4px',
