@@ -1,39 +1,27 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
-function Register() {
+function Login() {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [password2, setPassword2] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isPassword2Visible, setIsPassword2Visible] = useState(false);
   const [error, setError] = useState('');
-  const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setFormErrors({});
     setLoading(true);
 
-    if (password !== password2) {
-      setError('Registration Failed.');
-      setFormErrors({ password2: 'Passwords do not match.' });
-      return;
-    }
-
-    const result = await register(username, email, password, password2);
+    const result = await login(username, password);
 
     if (result.success) {
       navigate('/home');
     } else {
-      setError(result.error || 'Registration failed.');
-      setFormErrors(result.errors);
+      setError(result.error || 'Login failed. Please try again.');
     }
 
     setLoading(false);
@@ -42,7 +30,7 @@ function Register() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>Register</h1>
+        <h1 style={styles.title}>Login</h1>
         <form onSubmit={handleSubmit} style={styles.form}>
           {error && <div style={styles.error}>{error}</div>}
 
@@ -59,23 +47,6 @@ function Register() {
               style={styles.input}
               placeholder='Enter your username'
             />
-            {formErrors.username && <p style={styles.error}>{formErrors.username}</p>}
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label htmlFor='email' style={styles.label}>
-              Email
-            </label>
-            <input
-              id='email'
-              type='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={styles.input}
-              placeholder='Enter your email'
-            />
-            {formErrors.email && <p style={styles.error}>{formErrors.email}</p>}
           </div>
 
           <div style={styles.inputGroup}>
@@ -103,46 +74,17 @@ function Register() {
                 {isPasswordVisible ? 'Hide' : 'Show'}
               </button>
             </div>
-            {formErrors.password && <p style={styles.error}>{formErrors.password}</p>}
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label htmlFor='password2' style={styles.label}>
-              Verify Password
-            </label>
-            <div style={styles.showInput}>
-              <input
-                id='password2'
-                type={isPassword2Visible ? 'text' : 'password'}
-                value={password2}
-                onChange={(e) => setPassword2(e.target.value)}
-                required
-                style={styles.input}
-                placeholder='Verify Password'
-              />
-              <button
-                type='button'
-                style={styles.showButton}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsPassword2Visible((prev) => !prev);
-                }}
-              >
-                {isPassword2Visible ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {formErrors.password2 && <p style={styles.error}>{formErrors.password2}</p>}
           </div>
 
           <button type='submit' disabled={loading} style={styles.button}>
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <div style={styles.linkContainer}>
           <p style={styles.linkText}>
-            Already have an account?{' '}
-            <Link to='/login' style={styles.link}>
-              Login
+            Don't have an account?{' '}
+            <Link to='/register' style={styles.link}>
+              Register
             </Link>
           </p>
         </div>
@@ -260,4 +202,4 @@ const styles = {
   },
 };
 
-export default Register;
+export default Login;

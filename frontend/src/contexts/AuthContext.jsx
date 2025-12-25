@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { API_BASE_URL } from './config';
+import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext(null);
 
@@ -17,11 +17,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem('accessToken');
     if (token) {
       setAccessToken(token);
-      // Optionally verify token by fetching user data
       fetchUserData(token);
     } else {
       setLoading(false);
@@ -39,7 +37,6 @@ export const AuthProvider = ({ children }) => {
         const userData = await response.json();
         setUser(userData);
       } else {
-        // Token might be expired, clear it
         logout();
       }
     } catch (error) {
