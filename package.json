@@ -5,15 +5,16 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
     "install:backend": "pip install -r requirements.txt",
-    "server": "cd backend && python manage.py runserver",
-    "test:frontend": "cd frontend && npm run test",
-    "test:backend": "cd backend && python manage.py test",
-    "test": "npm run test:backend && npm run test:frontend",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend && npm install",
     "createsuperuser": "cd backend && python manage.py createsuperuser",
     "makemigrations": "cd backend && python manage.py makemigrations",
     "migrate": "cd backend && python manage.py migrate",
+    "server": "cd backend && python manage.py runserver",
     "frontend": "cd frontend && npm run dev",
-    "install:frontend": "cd frontend && npm install"
+    "test:frontend": "cd frontend && npm run test",
+    "test:backend": "cd backend && python manage.py test",
+    "test": "npm run test:backend && npm run test:frontend"
   },
   "keywords": [],
   "author": "",
