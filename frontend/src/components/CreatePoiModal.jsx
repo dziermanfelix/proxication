@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE_URL } from '../config';
 import './Modal.css';
+import DeletePoiModal from './DeletePoiModal';
 
 const CreatePoiModal = ({ clickedCoords, setClickedCoords, editingPoi, setEditingPoi, loadPois, setShowModal }) => {
   const { accessToken } = useAuth();
@@ -177,7 +178,7 @@ const CreatePoiModal = ({ clickedCoords, setClickedCoords, editingPoi, setEditin
             </div>
             <div className='modal-actions'>
               {isEditMode && (
-                <button type='button' onClick={handleDeleteClick} disabled={isLoading} className='btn btn-danger'>
+                <button type='button' onClick={handleDeleteClick} disabled={isLoading} className='btn btn-danger btn-delete'>
                   Delete
                 </button>
               )}
@@ -191,24 +192,14 @@ const CreatePoiModal = ({ clickedCoords, setClickedCoords, editingPoi, setEditin
           </form>
         </div>
       </div>
-      {showDeleteConfirm && editingPoi && (
-        <div className='modal-overlay' onClick={handleDeleteCancel}>
-          <div className='modal-content' onClick={(e) => e.stopPropagation()}>
-            <h2 className='modal-title'>Delete Point of Interest</h2>
-            <p style={{ marginBottom: '1.5rem', color: '#666' }}>
-              Are you sure you want to delete {editingPoi.name}? This action cannot be undone.
-            </p>
-            <div className='modal-actions'>
-              <button type='button' onClick={handleDeleteCancel} disabled={isDeleting} className='btn btn-secondary'>
-                Cancel
-              </button>
-              <button type='button' onClick={handleDeleteConfirm} disabled={isDeleting} className='btn btn-danger'>
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
+      <DeletePoiModal
+        showDeleteConfirm={showDeleteConfirm}
+        editingPoi={editingPoi}
+        handleDeleteCancel={handleDeleteCancel}
+        handleDeleteConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
+      />
     </>
   );
 };
