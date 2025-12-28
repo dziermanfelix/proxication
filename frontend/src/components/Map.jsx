@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useAuth } from '../contexts/AuthContext';
-import { API_BASE_URL } from '../config';
+import { usePoi } from '../contexts/PoiContext';
 import './Map.css';
 import CreatePoiModal from './CreatePoiModal';
+import DeletePoiModal from './DeletePoiModal';
+import { API_BASE_URL } from '../config';
 
 function Map() {
   const { accessToken } = useAuth();
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markersRef = useRef([]);
-  const [showModal, setShowModal] = useState(false);
-  const [clickedCoords, setClickedCoords] = useState(null);
-  const [editingPoi, setEditingPoi] = useState(null);
+
+  const { setShowPoiModal, setClickedCoords, setSelectedPoi } = usePoi();
 
   useEffect(() => {
     if (map.current) return;
@@ -26,9 +27,9 @@ function Map() {
     });
 
     map.current.on('click', (e) => {
-      setEditingPoi(null);
+      setSelectedPoi(null);
       setClickedCoords([e.lngLat.lng, e.lngLat.lat]);
-      setShowModal(true);
+      setShowPoiModal(true);
     });
 
     loadPois();
@@ -40,13 +41,32 @@ function Map() {
     }
   }, [accessToken]);
 
-  const handleEditPOI = (poi) => {
-    setEditingPoi(poi);
+  const handleEditPoi = (poi) => {
+    setSelectedPoi(poi);
     setClickedCoords([parseFloat(poi.longitude), parseFloat(poi.latitude)]);
-    setShowModal(true);
+    setShowPoiModal(true);
   };
 
-  const displayPOIs = (pois) => {
+  const loadPois = async () => {
+    if (!accessToken) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/pois/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const pois = await response.json();
+        displayPois(pois);
+      }
+    } catch (error) {
+      console.error('Error loading POIs:', error);
+    }
+  };
+
+  const displayPois = (pois) => {
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current = [];
 
@@ -60,7 +80,7 @@ function Map() {
       markerElement.addEventListener('click', (e) => {
         e.stopPropagation();
         const poiData = JSON.parse(markerElement.dataset.poiData);
-        handleEditPOI(poiData);
+        handleEditPoi(poiData);
       });
 
       const marker = new mapboxgl.Marker(markerElement)
@@ -79,38 +99,11 @@ function Map() {
     });
   };
 
-  const loadPois = async () => {
-    if (!accessToken) return;
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/pois/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      if (response.ok) {
-        const pois = await response.json();
-        displayPOIs(pois);
-      }
-    } catch (error) {
-      console.error('Error loading POIs:', error);
-    }
-  };
-
   return (
     <>
       <div ref={mapContainer} className='map-container' />
-      {showModal && (
-        <CreatePoiModal
-          clickedCoords={clickedCoords}
-          setClickedCoords={setClickedCoords}
-          editingPoi={editingPoi}
-          setEditingPoi={setEditingPoi}
-          loadPois={loadPois}
-          setShowModal={setShowModal}
-        />
-      )}
+      <CreatePoiModal loadPois={loadPois} />
+      <DeletePoiModal loadPois={loadPois} />
     </>
   );
 }

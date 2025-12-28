@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './index.css';
+import { PoiProvider } from './contexts/PoiContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -18,19 +19,21 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       }}
     >
       <AuthProvider>
-        <Routes>
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route
-            path='/home'
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route path='/' element={<Navigate to='/home' replace />} />
-        </Routes>
+        <PoiProvider>
+          <Routes>
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
+            <Route
+              path='/home'
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route path='/' element={<Navigate to='/home' replace />} />
+          </Routes>
+        </PoiProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
