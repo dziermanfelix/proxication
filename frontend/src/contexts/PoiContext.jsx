@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+import { API_BASE_URL } from '../config';
 
 const PoiContext = createContext(null);
 
@@ -11,6 +13,12 @@ export const usePoi = () => {
 };
 
 export const PoiProvider = ({ children }) => {
+  const { accessToken } = useAuth();
+
+  const [pois, setPois] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [showPoiModal, setShowPoiModal] = useState(false);
   const [clickedCoords, setClickedCoords] = useState(null);
   const [selectedPoi, setSelectedPoi] = useState(null);
@@ -20,6 +28,39 @@ export const PoiProvider = ({ children }) => {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const loadPois = useCallback(async () => {
+    if (!accessToken) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/pois/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const pois = await response.json();
+        setPois(pois);
+      } else {
+        setError('Failed to load POIs');
+      }
+    } catch (error) {
+      console.error('Error loading POIs:', error);
+      setError('Error loading POIs');
+    } finally {
+      setLoading(false);
+    }
+  }, [accessToken]);
+
+  useEffect(() => {
+    loadPois();
+  }, [loadPois]);
 
   useEffect(() => {
     if (selectedPoi) {
@@ -48,6 +89,11 @@ export const PoiProvider = ({ children }) => {
   };
 
   const value = {
+    pois,
+    setPois,
+    loading,
+    error,
+    loadPois,
     showPoiModal,
     setShowPoiModal,
     clickedCoords,

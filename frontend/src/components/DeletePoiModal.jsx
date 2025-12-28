@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 import { usePoi } from '../contexts/PoiContext';
 
-const DeletePoiModal = ({ loadPois }) => {
+const DeletePoiModal = () => {
   const { accessToken } = useAuth();
   const {
     selectedPoi,
@@ -13,6 +13,7 @@ const DeletePoiModal = ({ loadPois }) => {
     isDeleting,
     setIsDeleting,
     handleCloseModal,
+    loadPois,
   } = usePoi();
 
   const handleDeleteConfirm = async () => {

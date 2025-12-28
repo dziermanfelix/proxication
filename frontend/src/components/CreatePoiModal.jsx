@@ -4,7 +4,7 @@ import { usePoi } from '../contexts/PoiContext';
 import { API_BASE_URL } from '../config';
 import './Modal.css';
 
-const CreatePoiModal = ({ loadPois }) => {
+const CreatePoiModal = () => {
   const { accessToken } = useAuth();
   const {
     showPoiModal,
@@ -19,6 +19,7 @@ const CreatePoiModal = ({ loadPois }) => {
     poiDescription,
     setPoiDescription,
     setIsUpdating,
+    loadPois,
   } = usePoi();
   const [isCreating, setIsCreating] = useState(false);
   const isEditMode = selectedPoi !== null;
