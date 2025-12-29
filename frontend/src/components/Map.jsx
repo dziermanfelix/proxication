@@ -1,7 +1,8 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { usePoi } from '../contexts/PoiContext';
 import './Map.css';
+import SearchBox from './SearchBox';
 import CreatePoiModal from './CreatePoiModal';
 import DeletePoiModal from './DeletePoiModal';
 
@@ -9,6 +10,9 @@ function Map() {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const markersRef = useRef([]);
+  const lodgingMarkersRef = useRef([]);
+  const [mapInstance, setMapInstance] = useState(null);
+  const [lodgingPlaces, setLodgingPlaces] = useState([]);
 
   const { pois, setShowPoiModal, setClickedCoords, setSelectedPoi } = usePoi();
 
@@ -58,6 +62,75 @@ function Map() {
     [handleEditPoi]
   );
 
+  const displayLodgingPlaces = useCallback(
+    (places) => {
+      if (!map.current) return;
+
+      // Remove existing lodging markers
+      lodgingMarkersRef.current.forEach((marker) => marker.remove());
+      lodgingMarkersRef.current = [];
+
+      if (places.length === 0) return;
+
+      places.forEach((place) => {
+        const [lng, lat] = place.center;
+        const placeName = place.text || place.place_name || 'Unknown';
+
+        const markerElement = document.createElement('div');
+        markerElement.className = 'lodging-marker';
+        markerElement.title = placeName;
+
+        const popupContent = document.createElement('div');
+        popupContent.className = 'lodging-popup';
+
+        const title = document.createElement('h3');
+        title.className = 'lodging-popup-title';
+        title.textContent = placeName;
+        popupContent.appendChild(title);
+
+        if (place.properties?.address) {
+          const address = document.createElement('p');
+          address.className = 'lodging-popup-address';
+          address.textContent = place.properties.address;
+          popupContent.appendChild(address);
+        }
+
+        if (place.properties?.category) {
+          const category = document.createElement('p');
+          category.className = 'lodging-popup-category';
+          category.textContent = place.properties.category;
+          popupContent.appendChild(category);
+        }
+
+        const createBtn = document.createElement('button');
+        createBtn.className = 'lodging-create-poi-btn';
+        createBtn.textContent = 'Create POI from this location';
+        createBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setSelectedPoi(null);
+          setClickedCoords([lng, lat]);
+          setShowPoiModal(true);
+        });
+        popupContent.appendChild(createBtn);
+
+        const marker = new mapboxgl.Marker({
+          element: markerElement,
+          anchor: 'bottom',
+        })
+          .setLngLat([lng, lat])
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupContent))
+          .addTo(map.current);
+
+        lodgingMarkersRef.current.push(marker);
+      });
+    },
+    [setShowPoiModal, setClickedCoords, setSelectedPoi]
+  );
+
+  const handleLodgingPlacesChange = useCallback((places) => {
+    setLodgingPlaces(places);
+  }, []);
+
   useEffect(() => {
     if (map.current) return;
 
@@ -74,6 +147,9 @@ function Map() {
       setClickedCoords([e.lngLat.lng, e.lngLat.lat]);
       setShowPoiModal(true);
     });
+
+    // Set map instance in state so SearchBox can render
+    setMapInstance(map.current);
   }, [setShowPoiModal, setClickedCoords, setSelectedPoi]);
 
   useEffect(() => {
@@ -82,9 +158,20 @@ function Map() {
     }
   }, [pois, displayPois]);
 
+  useEffect(() => {
+    if (map.current && lodgingPlaces.length > 0) {
+      displayLodgingPlaces(lodgingPlaces);
+    } else if (map.current && lodgingPlaces.length === 0) {
+      // Clear lodging markers when list is empty
+      lodgingMarkersRef.current.forEach((marker) => marker.remove());
+      lodgingMarkersRef.current = [];
+    }
+  }, [lodgingPlaces, displayLodgingPlaces]);
+
   return (
     <>
       <div ref={mapContainer} className='map-container' />
+      {mapInstance && <SearchBox map={mapInstance} onLodgingPlacesChange={handleLodgingPlacesChange} />}
       <CreatePoiModal />
       <DeletePoiModal />
     </>
