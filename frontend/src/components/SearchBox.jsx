@@ -77,34 +77,30 @@ function SearchBox({ map, onLodgingPlacesChange }) {
       const [lng, lat] = cityCenter;
       const proximity = `proximity=${lng},${lat}`;
       const bbox = cityBounds?.length === 4 ? `&bbox=${cityBounds.join(',')}` : '';
-      const params = `${proximity}${bbox}`;
 
-      const queries = ['hotel', 'marriott', 'hilton', 'hyatt'];
-      const searches = queries.map(
-        (q) =>
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-            q
-          )}.json?access_token=${accessToken}&${params}&types=poi,address&limit=15`
-      );
+      const url =
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/hotel.json?` +
+        `access_token=${accessToken}&autocomplete=false&types=place,poi&${proximity}${bbox}&limit=50`;
 
-      const responses = await Promise.all(
-        searches.map((url) =>
-          fetch(url)
-            .then((res) => res.json())
-            .then((data) => data.features || [])
-            .catch(() => [])
-        )
-      );
+      const response = await fetch(url);
 
-      const allResults = responses.flat();
-      const uniqueLodging = allResults
-        .filter((f) => f.center?.length >= 2 && !f.place_type?.includes('region'))
-        .filter((p, i, self) => i === self.findIndex((x) => x.id === p.id))
-        .slice(0, 50);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Mapbox API error:', response.status, errorData);
+        throw new Error(`API error: ${response.status}`);
+      }
 
-      setLodgingPlaces(uniqueLodging);
-      onLodgingPlacesChange?.(uniqueLodging);
+      const data = await response.json();
+
+      if (data.features && Array.isArray(data.features)) {
+        setLodgingPlaces(data.features);
+        onLodgingPlacesChange?.(data.features);
+      } else {
+        setLodgingPlaces([]);
+        onLodgingPlacesChange?.([]);
+      }
     } catch (error) {
+      console.error('Error searching for hotels:', error);
       setLodgingPlaces([]);
       onLodgingPlacesChange?.([]);
     } finally {
